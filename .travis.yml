@@ -1,19 +1,35 @@
 dist: xenial
 sudo: required
-
 language: node_js
 node_js:
-  - "lts/*"
+- lts/*
+
+addons:
+  ssh_known_hosts:
+    - 172.104.15.177
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_9fde07216ad9_key -iv $encrypted_9fde07216ad9_iv
+  -in scripts/hugo.enc -out scripts/hugo -d
+- eval "$(ssh-agent -s)"
+- cp scripts/hugo ~/.ssh/hugo
+- chmod 600 ~/.ssh/hugo
+- ssh-add ~/.ssh/hugo
+- echo -e "Host 172.104.15.177\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 
 install:
-  - wget "https://github.com/gohugoio/hugo/releases/download/v${HUGO_RELEASE}/hugo_extended_${HUGO_RELEASE}_Linux-64bit.deb"
-  - sudo dpkg -i hugo*.deb
-
+- wget "https://github.com/gohugoio/hugo/releases/download/v${HUGO_RELEASE}/hugo_extended_${HU$- sudo dpkg -i hugo*.deb
 script:
-  - hugo version # prints the Hugo version, just in case.
-  - hugo # build the website
-
+- hugo version
+- hugo
 env:
   global:
-    - PRODUCTION=true
-    - HUGO_RELEASE=0.54.0
+  - PRODUCTION=true
+  - HUGO_RELEASE=0.54.0
+
+deploy:
+- provider: script
+  skip_cleanup: true
+  script: bash scripts/deploy.sh
+  on:
+    branch: master
