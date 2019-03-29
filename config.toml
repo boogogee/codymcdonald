@@ -25,7 +25,7 @@ theme = "hugo-serif-theme"
 
 [[menu.main]]
     name = "Projects"
-    url = "/team/"
+    url = "/projects/"
     weight = 2
 
 [[menu.main]]
